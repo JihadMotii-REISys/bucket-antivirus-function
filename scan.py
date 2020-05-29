@@ -20,6 +20,7 @@ from urllib.parse import unquote_plus
 from distutils.util import strtobool
 
 import boto3
+import requests
 
 import clamav
 import metrics
@@ -196,6 +197,22 @@ def sns_scan_results(
             },
         },
     )
+    response = requests.post(
+        url="https://hooks.slack.com/services/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",
+        headers={
+            "Content-Type": "application/json; charset=utf-8",
+        },
+        data=json.dumps({
+            "username": "clam-av-bot",
+            "icon_emoji": ":ghost:",
+            "channel": "#symview",
+            "text": json.dumps(message)
+        })
+    )
+    print('Response HTTP Status Code: {status_code}'.format(
+        status_code=response.status_code))
+    print('Response HTTP Response Body: {content}'.format(
+        content=response.content))
 
 
 def lambda_handler(event, context):

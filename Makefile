@@ -45,18 +45,6 @@ pre_commit_install: .git/hooks/pre-commit ## Ensure pre-commit is installed
 	pre-commit install
 	pre-commit install-hooks
 
-.PHONY: pre_commit_tests
-pre_commit_tests: ## Run pre-commit tests
-	pre-commit run --all-files
-
-.PHONY: test
-test: clean  ## Run python tests
-	nosetests
-
-.PHONY: coverage
-coverage: clean  ## Run python tests with coverage
-	nosetests --with-coverage
-
 .PHONY: scan
 scan: ./build/lambda.zip ## Run scan function locally
 	scripts/run-scan-lambda $(TEST_BUCKET) $(TEST_KEY)
