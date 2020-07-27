@@ -37,7 +37,6 @@ from common import CLAMSCAN_PATH
 from common import FRESHCLAM_PATH
 from common import create_dir
 
-
 RE_SEARCH_DIR = r"SEARCH_DIR\(\"=([A-z0-9\/\-_]*)\"\)"
 
 
@@ -65,9 +64,9 @@ def update_defs_from_s3(s3_client, bucket, prefix):
             else:
                 s3_best_time = s3_time
 
-            if os.path.exists(local_path) and md5_from_file(local_path) == s3_md5:
-                print("Not downloading %s because local md5 matches s3." % filename)
-                continue
+            # if os.path.exists(local_path) and md5_from_file(local_path) == s3_md5:
+            #     print("Not downloading %s because local md5 matches s3." % filename)
+            #     continue
             if s3_md5:
                 to_download[file_prefix] = {
                     "s3_path": s3_path,
@@ -83,28 +82,28 @@ def upload_defs_to_s3(s3_client, bucket, prefix, local_path):
             local_file_path = os.path.join(local_path, filename)
             if os.path.exists(local_file_path):
                 local_file_md5 = md5_from_file(local_file_path)
-                if local_file_md5 != md5_from_s3_tags(
-                    s3_client, bucket, os.path.join(prefix, filename)
-                ):
-                    print(
-                        "Uploading %s to s3://%s"
-                        % (local_file_path, os.path.join(bucket, prefix, filename))
-                    )
-                    s3 = boto3.resource("s3")
-                    s3_object = s3.Object(bucket, os.path.join(prefix, filename))
-                    s3_object.upload_file(os.path.join(local_path, filename))
-                    s3_client.put_object_tagging(
-                        Bucket=s3_object.bucket_name,
-                        Key=s3_object.key,
-                        Tagging={"TagSet": [{"Key": "md5", "Value": local_file_md5}]},
-                    )
-                else:
-                    print(
-                        "Not uploading %s because md5 on remote matches local."
-                        % filename
-                    )
-            else:
-                print("File does not exist: %s" % filename)
+                # if local_file_md5 != md5_from_s3_tags(
+                #     s3_client, bucket, os.path.join(prefix, filename)
+                # ):
+                print(
+                    "Uploading %s to s3://%s"
+                    % (local_file_path, os.path.join(bucket, prefix, filename))
+                )
+                s3 = boto3.resource("s3")
+                s3_object = s3.Object(bucket, os.path.join(prefix, filename))
+                s3_object.upload_file(os.path.join(local_path, filename))
+                s3_client.put_object_tagging(
+                    Bucket=s3_object.bucket_name,
+                    Key=s3_object.key,
+                    Tagging={"TagSet": [{"Key": "md5", "Value": local_file_md5}]},
+                )
+            # else:
+            #     print(
+            #         "Not uploading %s because md5 on remote matches local."
+            #         % filename
+            #     )
+        else:
+            print("File does not exist: %s" % filename)
 
 
 def update_defs_from_freshclam(path, library_path=""):
