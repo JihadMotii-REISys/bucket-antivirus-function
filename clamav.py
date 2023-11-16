@@ -97,23 +97,20 @@ def upload_defs_to_s3(s3_client, bucket, prefix, local_path):
                     Key=s3_object.key,
                     Tagging={"TagSet": [{"Key": "md5", "Value": local_file_md5}]},
                 )
-            # else:
-            #     print(
-            #         "Not uploading %s because md5 on remote matches local."
-            #         % filename
-            #     )
-        else:
-            print("File does not exist: %s" % filename)
+                # else:
+                #     print(
+                #         "Not uploading %s because md5 on remote matches local."
+                #         % filename
+                #     )
+            else:
+                print("File does not exist: %s" % filename)
 
 
 def update_defs_from_freshclam(path, library_path=""):
     create_dir(path)
     fc_env = os.environ.copy()
     if library_path:
-        fc_env["LD_LIBRARY_PATH"] = "%s:%s" % (
-            ":".join(current_library_search_path()),
-            CLAMAVLIB_PATH,
-        )
+        fc_env["LD_LIBRARY_PATH"] = f"{os.environ.get('LD_LIBRARY_PATH')}:{library_path}"
     print("Starting freshclam with defs in %s." % path)
     fc_proc = subprocess.Popen(
         [
@@ -185,10 +182,7 @@ def scan_output_to_json(output):
 
 def scan_file(path):
     av_env = os.environ.copy()
-    av_env["LD_LIBRARY_PATH"] = "%s:%s" % (
-        ":".join(current_library_search_path()),
-        CLAMAVLIB_PATH,
-    )
+    av_env["LD_LIBRARY_PATH"] = f"{os.environ.get('LD_LIBRARY_PATH')}:{CLAMAVLIB_PATH}"
     print("Starting clamscan of %s." % path)
     av_proc = subprocess.Popen(
         [CLAMSCAN_PATH, "-v", "-a", "--stdout", "-d", AV_DEFINITION_PATH, path],
