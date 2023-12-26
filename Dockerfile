@@ -14,9 +14,9 @@ RUN mkdir -p /home
 WORKDIR /home
 RUN yum install -y cpio yum-utils zip unzip less \
     openssl openssl-devel wget tar xz gcc make zlib-devel
-RUN wget -c https://www.python.org/ftp/python/3.11.6/Python-3.11.6.tar.xz
-RUN tar -Jxvf Python-3.11.6.tar.xz
-WORKDIR /home/Python-3.11.6
+RUN wget -c https://www.python.org/ftp/python/3.12.1/Python-3.12.1.tar.xz
+RUN tar -Jxvf Python-3.12.1.tar.xz
+WORKDIR /home/Python-3.12.1
 RUN ./configure --enable-optimizations --with-ensurepip
 RUN make
 RUN make install
@@ -46,7 +46,7 @@ RUN echo "CompressLocalDatabase yes" >> /opt/app/bin/freshclam.conf
 WORKDIR /opt/app
 RUN zip -r9 --exclude="*test*" /opt/app/build/lambda.zip *.py bin
 
-WORKDIR /usr/local/lib/python3.11/site-packages
+WORKDIR /usr/local/lib/python3.12/site-packages
 RUN zip -r9 /opt/app/build/lambda.zip *
 
 WORKDIR /opt/app
