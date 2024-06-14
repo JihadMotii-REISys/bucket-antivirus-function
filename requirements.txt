@@ -7,3 +7,4 @@ requests==2.31.0
 simplejson==3.19.2
 urllib3==2.1.0
 pytz==2023.3.post1
+setuptools==69.0.3
